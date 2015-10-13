@@ -20,10 +20,13 @@ class LoginView {
 	private $lm;
 	//refrence object to the appView
 	private $AppV;
+	//session manipulator
+	private $sm;
 
-	public function __construct($lm, $AppV){
+	public function __construct($lm, $AppV, $sm){
 		$this -> lm = $lm;
 		$this -> AppV = $AppV;
+		$this -> sm = $sm;
 	}
 
 	/**
@@ -35,17 +38,16 @@ class LoginView {
 	 */
 	public function response() {
 		//if a new user was just registerd, their name is set to defualt aswell as a new StatusMessage
-		if(isset($_SESSION["newUser"])){
-	        self::$SaveUserName = $_SESSION["newUser"];
+		if($this -> sm -> isNewUserSessionSet()){
+	        self::$SaveUserName = $this -> sm -> getNewUserSession();
 	        self::$StatusMessage = "Registered new user.";
-	        unset($_SESSION["newUser"]);
         }
 		
 		//Sets the current status message
 		$message = self::$StatusMessage;
 
 		//If logged in only the logout HTML is shown
-		if($this -> lm -> getLoginStatus())
+		if($this -> sm -> getLoggedInSession())
 		{
 			$response = $this->generateLogoutButtonHTML($message);
 		}
@@ -62,14 +64,15 @@ class LoginView {
 	* @return  void, BUT writes to standard output!
 	*/
 	private function generateLogoutButtonHTML($message) {
-		$ret = $this -> AppV -> GetAppView();
-		
-		$ret .=  '
+		$ret =  '
 			<form  method="post" >
 				<p id="' . self::$messageId . '">' . $message .'</p>
 				<input type="submit" name="' . self::$logout . '" value="logout"/>
 			</form>
 		';
+		$ret .= $this -> AppV -> GetAppView();
+		
+		
 		return $ret;
 	}
 	

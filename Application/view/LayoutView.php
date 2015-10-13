@@ -4,7 +4,7 @@
 class LayoutView {
   
   //echos out all of the html
-  public function render($isLoggedIn, LoginView $v, DateTimeView $dtv, $rv) {
+  public function render($isLoggedIn, LoginView $v, $rv) {
     $html = '<!DOCTYPE html>
       <html>
         <head>
@@ -24,7 +24,6 @@ class LayoutView {
           else{
             $html .= $rv -> RegisterLayout();
           }
-          $html .= $dtv->show();    
           $html .= '</div>
          </body>
       </html>

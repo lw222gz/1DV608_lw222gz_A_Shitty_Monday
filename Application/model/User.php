@@ -1,6 +1,8 @@
 <?php
 
 class User{
+    
+    //email, displayName, date registerd
     private $Name;
     private $Password;
     

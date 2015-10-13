@@ -11,57 +11,33 @@ class LoginController {
     private $rv;
     //RegisterModel object
     private $rm;
+    //session manipulator
+    private $sm;
 
     
     //sets the object references.
-    public function __construct($v, $lm, $rv, $rm){
+    public function __construct($v, $lm, $rv, $rm,$sm){
         $this -> v = $v;
         $this -> lm = $lm;
         $this -> rv = $rv;
         $this -> rm = $rm;
-    }
-    
-    //Initiate function that checks for button clicks.
-    public function init(){
-        try {
-            if($this -> rv -> hasPressedRegister()){
-                self::RegisterNewUser();
-            }
-            
-            if ($this -> v -> hasPressedLogin())
-            {
-                self::LogIn();
-            }
-            
-            else if($this -> v -> hasPressedLogOut()){
-                self::LogOut();
-            }
-        }
-        catch (LoginModelException $e){
-            $this -> v -> setStatusMessage($e);
-        }
-        catch (RegisterModelException $e){
-            $this -> rv -> setErrorMessage($e);
-        }
-        catch (Exception $e){
-            echo "An unhandeld exception was thrown. Please infrom...";
-        }
+        $this -> sm = $sm;
     }
     
     
-   private function RegisterNewUser(){
+   public function RegisterNewUser(){
         //validates input data and registers a user.
         $RegisterUserName = $this -> rv -> getRequestUserName();
         $this -> rm -> Register($RegisterUserName, $this -> rv -> getRequestPassword(), $this -> rv -> getRequestPasswordCheck());
-
-        $_SESSION["newUser"] = $RegisterUserName;
+        
+        $this -> sm -> setNewUserSession($RegisterUserName);
         
         //redirects user to index page
         header("Location: ?");
     }
     
     //tries to log in the user
-    private function LogIn(){
+    public function LogIn(){
         $this -> lm -> CheckLoginInfo($this -> v -> getRequestUserName(), $this -> v -> getRequestUserPassword());
 
         //On the original log in, it shows the Welcome message
@@ -69,7 +45,7 @@ class LoginController {
     }
     
     //Logs out the user
-    private function LogOut(){
+    public function LogOut(){
         $this -> lm -> LogOut();
         
         //on the original logout it shows the bye bye message

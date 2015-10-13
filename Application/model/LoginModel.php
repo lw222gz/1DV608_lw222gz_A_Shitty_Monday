@@ -4,15 +4,13 @@
 class LoginModel {
     
     private static $UserDAL;
-    private static $isLoggedin = "isLoggedin";
+    private $sm; //session handler
     
     
-    public function __construct($DAL){
+    
+    public function __construct($DAL, $sm){
         self::$UserDAL = $DAL;
-        //if the session isent set yet, I give it default value false so that any if-statements later on wont crash due to an undefined session.
-        if(!isset($_SESSION[self::$isLoggedin])){
-            $_SESSION[self::$isLoggedin] = false;
-        }
+        $this -> sm = $sm;
     }
     
     //Takes the given data and throws a proper Exception if anything is wrong, 
@@ -33,9 +31,8 @@ class LoginModel {
         else if(empty($Pass)){
             throw new LoginModelException('Password is missing');
         }
-        //If this session allready exsists and is true, then it's a repost, 
-        //if it's a repost I throw an empty error to remove the StatusMessage
-        else if(isset($_SESSION[self::$isLoggedin]) && $_SESSION[self::$isLoggedin] == true){
+        //if the session is true then it's a repost and the Welcome message is removed
+        else if($this -> sm -> getLoggedInSession()){
                 throw new LoginModelException();
         }
         
@@ -44,42 +41,31 @@ class LoginModel {
             if($UserN == $Ruser -> getUserName()){
                 if(sha1(file_get_contents("../Data/salt.txt")+$UserN.$Pass) == $Ruser -> getHasedPassword()){
                     //--
-                    $_SESSION["LoggedInUser"] = $UserN;
-                    //$_SESSION[$_SESSION["LoggedInUser"]] = $UserN;
+                    $this -> sm -> setUserNameSession($UserN);
+                    
                     //--
-                    $_SESSION[self::$isLoggedin] = true;
+                    $this -> sm -> setLoggedInSession(true);
                     break;
                 }
             }
         }
-        if(!$_SESSION[self::$isLoggedin]){
+        if(!$this -> sm -> getLoggedInSession()){
             throw new LoginModelException('Wrong name or password');
         }
     }
 
     
-    //@returns boolean, 
-    //true if logged in, false if not logged in.
-    public function getLoginStatus(){
-        if(isset($_SESSION[self::$isLoggedin])){
-            return $_SESSION[self::$isLoggedin];
-        }
-        else{
-            return false;
-        }
-    }
-    
     //Logs the user out of the system
     public function LogOut(){
         //If this session allready exsists and it's value is false, then it's a repost, 
         //if it's a repost I throw an empty error to remove the StatusMessage
-        if (isset($_SESSION[self::$isLoggedin]) && !$_SESSION[self::$isLoggedin]){
+        if (!$this -> sm -> getLoggedInSession()){
             throw new LoginModelException();
         }
-    
-        unset($_SESSION["LoggedInUser"]);
+        
+        //$this -> sm -> setUserNameSession("");
         //Otherwise the person just logged out and the bye bye message will be shown.
-        $_SESSION[self::$isLoggedin] = false;
+        $this -> sm -> setLoggedInSession(false);
     }
 }
 
