@@ -28,7 +28,7 @@ class LoginController {
    public function RegisterNewUser(){
         //validates input data and registers a user.
         $RegisterUserName = $this -> rv -> getRequestUserName();
-        $this -> rm -> Register($RegisterUserName, $this -> rv -> getRequestPassword(), $this -> rv -> getRequestPasswordCheck());
+        $this -> rm -> Register($RegisterUserName, $this -> rv -> getRequestDisplayName(), $this -> rv -> getRequestPassword(), $this -> rv -> getRequestPasswordCheck());
         
         $this -> sm -> setNewUserSession($RegisterUserName);
         

@@ -1,35 +1,53 @@
 <?php
 
 class UserDAL {
-    
-    //private static $Users = array();
-    
-    private static $path = "../Data/database.bin";
-    
-    public function __construct(){
-        //checks if file exists, otherwise it's created
-        if(!file_exists(self::$path)){
-            self::$dbFile = fopen(self::$path, "w");
-            fclose(self::$path);
-        }
-    }
-    
-    public function AddUser($userName, $hasedPassword){
 
-        $Users = self::getUnserializedUsers();
-        //if Users == false, then the .bin is empty and it returns false, thus I make the varibel to an array manually so array_push dont crash the site.
-        if($Users == false){
-            $Users = array();
-        }
-        array_push($Users, new User($userName, $hasedPassword));
-        //re-searializes the array and puts all the data back in the file.
-        $SerializedUsers = serialize($Users);
-        file_put_contents(self::$path, $SerializedUsers);
+    private $DALb;
+    private $Users;
+    
+    
+    public function __construct($DALb){
+        $this -> DALb = $DALb;
     }
     
-    //returns all user data unseralized
-    public function getUnserializedUsers(){
-        return unserialize(file_get_contents(self::$path));
+    //adds a user to the DB and returns the result of it, true is successful otherwise it returns false.
+    public function AddUser($userName, $displayName, $hasedPassword){
+        $conn = $this -> DALb -> getSQLConn();
+        
+        $query = "INSERT INTO `Users`(`LoginName`, `DisplayName`, `HashedPassword`) VALUES ('$userName','$displayName','$hasedPassword')";
+        
+        $result = mysqli_query($conn, $query);
+        
+        $conn -> close();
+        
+        return $result;
+    }
+    
+    //returns false if something went wrong when executing the query, otherwise an array with User objects are returned.
+    public function getUserData(){
+        $this -> Users = array();
+        
+        $conn = $this -> DALb -> getSQLConn();
+        
+        $query = "SELECT `LoginName`, `DisplayName`, `HashedPassword` FROM `Users`";
+        
+        $result = mysqli_query($conn, $query);
+        
+        if(!$result){
+            $conn -> close;
+            return $result;
+        }
+        if ($result->num_rows > 0) {
+            //creates a new User for each line in the Users table
+            while($row = $result->fetch_assoc()) {
+                array_push($this -> Users, new User($row["LoginName"], $row["DisplayName"], $row["HashedPassword"]));
+            }
+        } 
+        
+        
+        $conn->close();
+        
+        return $this -> Users;
     }
 
 }

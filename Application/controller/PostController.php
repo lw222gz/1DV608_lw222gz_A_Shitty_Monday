@@ -12,19 +12,13 @@ class PostController {
     }
     
     public function AddPost(){
-        try
-        {
-            $this -> psM -> addNewPost($this -> sm -> getUserNameSession(), $this -> psV -> getStory());
-        }
-        catch (PostStoryError $e){
-            echo "ERROR! EXTERMINATE! EXTERMINATE!";
-        }
-        catch (Exception $e){
-            echo "An unknown error was thrown, please inform...";
-        }
+        $this -> psM -> addNewPost($this -> sm -> getUserNameSession(), $this -> psV -> getTitle(), $this -> psV -> getStory());
+        
+        header("Location: ?");
     }
     
     public function getAllPosts(){
+        
         return $this -> psM -> getAllPosts();
     }
 }
