@@ -2,11 +2,13 @@
 
 class Post{
     private $Creator;
+    private $Title;
     private $Story;
     private $DateCreated;
     
-    public function __construct($Creator, $Story, $DateCreated){
+    public function __construct($Creator, $Title, $Story, $DateCreated){
         $this -> Creator = $Creator;
+        $this -> Title = $Title;
         $this -> Story = $Story;
         $this -> DateCreated = $DateCreated;
     }
@@ -21,5 +23,9 @@ class Post{
     
     public function getDateCreated(){
         return $this -> DateCreated;
+    }
+    
+    public function getTitle(){
+        return $this -> Title;
     }
 }

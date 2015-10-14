@@ -25,11 +25,6 @@ class MasterController{
     public function init(){
         try 
         {
-            //TODO: could benefit from only running when on the index page.
-            if($this -> sm -> getLoggedInSession()){
-                $this -> appV -> setAllPosts($this -> PostCont -> getAllPosts());
-            }
-            
             if($this -> rv -> hasPressedRegister()){
                 $this -> LoginCont -> RegisterNewUser();
             }
@@ -45,12 +40,21 @@ class MasterController{
             else if($this -> psV -> hasPressedUpload()){
                 $this -> PostCont -> AddPost();
             }
+            
+            //TODO: could benefit from only running when on the index page.
+            //if the user is logged in, all the posts are set and displayed
+            if($this -> sm -> getLoggedInSession()){
+                $this -> appV -> setAllPosts($this -> PostCont -> getAllPosts());
+            }
         }
         catch (LoginModelException $e){
             $this -> lv -> setStatusMessage($e);
         }
         catch (RegisterModelException $e){
             $this -> rv -> setErrorMessage($e);
+        }
+        catch (PostStoryError $e){
+            $this -> psV -> setErrorMessage($e -> getMessage());
         }
         catch (Exception $e){
             echo "An unhandeld exception was thrown. Please infrom...";

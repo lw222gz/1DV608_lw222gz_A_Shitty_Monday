@@ -8,6 +8,7 @@ session_start();
 
 
 //INCLUDE THE FILES NEEDED...
+require_once('Settings.php');
 require_once('view/LoginView.php');
 require_once('view/LayoutView.php');
 require_once('view/RegisterView.php');
@@ -35,10 +36,10 @@ ini_set('display_errors', 'On');
 
 //CREATE OBJECTS OF THE MODELS/ VIEWS/ Controllers
 $DALb = new DALBase();
-$UDAL = new UserDAL();
-
-
+$UDAL = new UserDAL($DALb);
 $pDAL = new PostsDAL($DALb);
+
+
 $psM = new PostStatusModel($pDAL);
 $sm = new SessionManager();
 $lm = new LoginModel($UDAL, $sm);

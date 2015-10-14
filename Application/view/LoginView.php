@@ -72,7 +72,6 @@ class LoginView {
 		';
 		$ret .= $this -> AppV -> GetAppView();
 		
-		
 		return $ret;
 	}
 	

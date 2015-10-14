@@ -17,10 +17,10 @@ class LoginModel {
     //otherwise returns @boolean
     public function CheckLoginInfo($UserN, $Pass) {
         
-        $RegisterdUsers = self::$UserDAL -> getUnserializedUsers();
+        $RegisterdUsers = self::$UserDAL -> getUserData();
         //if $RegisterdUsers is false then the .bin is empty
-        if($RegisterdUsers == false){
-            throw new LoginModelException("No registerd users yet");
+        if(!$RegisterdUsers){
+            throw new LoginModelException("Error occured when trying to loggin.");
         }
         
         //When an Exception is thrown, the controller will pick that exception up, 
@@ -39,11 +39,11 @@ class LoginModel {
         //Otherwise it's the origninal login and the user credentials will be checked.
         foreach ($RegisterdUsers as $Ruser){
             if($UserN == $Ruser -> getUserName()){
-                if(sha1(file_get_contents("../Data/salt.txt")+$UserN.$Pass) == $Ruser -> getHasedPassword()){
-                    //--
-                    $this -> sm -> setUserNameSession($UserN);
+                if(sha1(Settings::$Salt.$UserN.$Pass) == $Ruser -> getHasedPassword()){
                     
-                    //--
+                    //sets the user display name is set for a welcome message aswell as usage when making a post
+                    $this -> sm -> setUserNameSession($Ruser -> getDisplayName());
+
                     $this -> sm -> setLoggedInSession(true);
                     break;
                 }
