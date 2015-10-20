@@ -1,4 +1,4 @@
 # 1DV608_lw222gz_A_Shitty_Monday
-Project Application for my php course.
+This repo is no longer active, the project has been moved to a new repo due to some issues. This repo will be deleted after the grading for the project is done.
 
-In the wiki for this repo a requirement-list, testcase-list and a testreport-list can be found. 
+new repository : https://github.com/lw222gz/Php_A_Shitty_Monday
